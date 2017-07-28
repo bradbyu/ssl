@@ -37,12 +37,12 @@ class KeyPairGenerator
     {
         Assert::integer($keySize, __METHOD__.'::$keySize should be an integer. Got: %s');
 
-        $key = openssl_pkey_new(
-            [
-                'private_key_type' => OPENSSL_KEYTYPE_RSA,
-                'private_key_bits' => $keySize,
-            ]
-        );
+        $config = [
+            'config'           => 'C:\php\php-7.0\extras\ssl\openssl.cnf',
+            'private_key_type' => OPENSSL_KEYTYPE_RSA,
+            'private_key_bits' => $keySize,
+        ];
+        $key    = openssl_pkey_new($config);
 
         if (!$key) {
             throw new KeyPairGenerationException(
@@ -53,7 +53,7 @@ class KeyPairGenerator
             );
         }
 
-        if (!openssl_pkey_export($key, $privateKey)) {
+        if (!openssl_pkey_export($key, $privateKey, null, $config)) {
             throw new KeyPairGenerationException(
                 sprintf(
                     'OpenSSL key export failed during generation with error: %s',
